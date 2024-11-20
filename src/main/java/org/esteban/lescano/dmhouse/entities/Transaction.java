@@ -16,7 +16,7 @@ private Integer transactionId;
 @ManyToOne
 @JoinColumn(name = "acount_id", referencedColumnName = "acount_id")
 private Acount acount;
-private Date fecha;
+private Date DateTransaction;
 @Column(name = "estado_id")
 private Integer stateId;
 private BigDecimal amount;
@@ -40,6 +40,7 @@ private Integer toAccountId;
  * desde 0 y si intercambiamos el orden el 0 pasa a ser siempre el primero. Si
  * quisieramos tener uno customizado, en JAVA es mas complejo(se ahoga en un
  * vaso de agua)
+ * estos enum debria hacerlos en otra clase que sea exclusiva
  */
 public enum TransactionTypeEnum {
 	outgoing, // Este es siempre 0
