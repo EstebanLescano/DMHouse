@@ -1,10 +1,18 @@
 package org.esteban.lescano.dmhouse.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "transaction")
 public class Transaction {
@@ -17,7 +25,7 @@ private Integer transactionId;
 @JoinColumn(name = "acount_id", referencedColumnName = "acount_id")
 private Acount acount;
 private Date DateTransaction;
-@Column(name = "estado_id")
+@Column(name = "state_id")
 private Integer stateId;
 private BigDecimal amount;
 private String currency;
@@ -51,4 +59,53 @@ public enum TransactionConceptEnum {
 	RECHARGE, // Este es siempre 0
 	SEND // Este es siempre 1
 }
+public enum ResultadoTransaccionEnum {
+	NEGATIVE_IMPORT_ERROR,
+	INITIATED,
+	INSUFFICIENT_BALANCE,
+	DESTINATION_WALLET_NOT_FOUND,
+	SOURCE_WALLET_NOT_FOUND,
+	DAILY_LIMIT_REACHED,
+	NONEXISTENT_ORIGIN_ACCOUNT,
+	NONEXISTENT_DESTINATION_ACCOUNT,
+	WILL_WANT_TO_PAY_ITSELF,
+	NONEXISTENT_DESTINATION_EMAIL
+}
+
+/***
+ * En este caso es un ENUMERADO con numeracion customizada En JAVA, los
+ * enumerados con numeros customizados deben tener un constructor y un
+ * comparador para poder funcionar correctamente
+ */
+// Este es un ejemplo de enumerado de estados customizados.
+public enum StatusTransactionEnum {
+	PENDING(0),
+	SEND(1),
+	RECEIVED(2),
+	EXECUTED(4),
+	MISSING_FUNDS(80),
+	GENERAL_ERROR(99);
+	
+	private final int value;
+	// NOTE: Enum constructor tiene que estar en privado
+	private StatusTransactionEnum(int value) {
+		this.value = value;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+	
+	public static StatusTransactionEnum parse(int id) {
+		StatusTransactionEnum status = null; // Default
+		for (StatusTransactionEnum item : StatusTransactionEnum.values()) {
+			if (item.getValue() == id) {
+				status = item;
+				break;
+			}
+		}
+		return status;
+	}
+}
+
 }

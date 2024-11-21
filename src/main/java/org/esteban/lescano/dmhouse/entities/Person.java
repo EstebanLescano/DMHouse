@@ -19,7 +19,7 @@ public class Person {
 private Integer personId;
 private String nombre;
 @Column(name = "country_id")
-private Integer paisId;
+private Integer countryId;
 @Column(name = "type_documen_id")
 private Integer typeDocumenId;
 private String documen;

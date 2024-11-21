@@ -25,9 +25,9 @@ public class Acount {
 @Id
 @Column(name = "acount_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-private Integer cuentaId;
-private BigDecimal saldo;
-private String moneda;
+private Integer acountId;
+private BigDecimal balance;
+private String money;
 @ManyToOne
 @JoinColumn(name = "wallet_id", referencedColumnName = "wallet_id")
 private Wallet wallet;
