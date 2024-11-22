@@ -21,10 +21,15 @@ public class Wallet {
 @Column(name = "wallet_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Integer wallet_id;
+
 @OneToOne
 @JoinColumn(name = "person_id",referencedColumnName = "person_id")
 private Person person;
-@OneToMany(mappedBy = "wallet_id",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-private List<Acount> acount = new ArrayList<>();
 
+@OneToMany(mappedBy = "wallet_id",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+private List<Account> account = new ArrayList<>();
+
+public void addAccount(Account pesos) {
+	account.add(pesos);
+}
 }

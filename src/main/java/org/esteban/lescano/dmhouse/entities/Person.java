@@ -16,17 +16,25 @@ public class Person {
 @Id
 @Column(name = "person_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
+
 private Integer personId;
-private String nombre;
+
+private String name;
+
 @Column(name = "country_id")
 private Integer countryId;
+
 @Column(name = "type_documen_id")
 private Integer typeDocumenId;
+
 private String documen;
-@Column(name = "fecha_nacimiento")
+
+@Column(name = "birthdate")
 private Date birthdate;
+
 @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
 private Users users;
+
 @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
 private Wallet wallet;
 }

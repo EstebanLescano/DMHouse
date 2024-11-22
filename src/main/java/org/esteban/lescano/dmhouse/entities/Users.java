@@ -18,12 +18,18 @@ public class Users {
 @Id
 @Column(name="User_id")
 @GeneratedValue(strategy=GenerationType.IDENTITY)
+
 private int userId;
+
 private String userName;
+
 private String password;
+
 private String email;
+
 @Column(name = "date_login")
-private Date fechaLogin;
+private Date dateLogin;
+
 @OneToOne
 @JoinColumn(name = "person_id", referencedColumnName = "person_id")
 private Person person;

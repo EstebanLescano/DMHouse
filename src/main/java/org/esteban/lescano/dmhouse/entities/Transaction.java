@@ -23,7 +23,7 @@ public class Transaction {
 private Integer transactionId;
 @ManyToOne
 @JoinColumn(name = "acount_id", referencedColumnName = "acount_id")
-private Acount acount;
+private Account account;
 private Date DateTransaction;
 @Column(name = "state_id")
 private Integer stateId;

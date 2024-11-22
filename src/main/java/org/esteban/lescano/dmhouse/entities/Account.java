@@ -19,19 +19,23 @@ import java.util.List;
 @ToString
 @RequiredArgsConstructor
 @Entity
-@Table(name = "acount")
-public class Acount {
+@Table(name = "account")
+public class Account {
 
 @Id
-@Column(name = "acount_id")
+@Column(name = "account_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Integer acountId;
+
 private BigDecimal balance;
+
 private String money;
+
 @ManyToOne
 @JoinColumn(name = "wallet_id", referencedColumnName = "wallet_id")
 private Wallet wallet;
-@OneToMany(mappedBy = "acount", cascade = CascadeType.ALL)
+
+@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 @LazyCollection(LazyCollectionOption.FALSE)
 private List<Transaction> transactions = new ArrayList<>();
 
