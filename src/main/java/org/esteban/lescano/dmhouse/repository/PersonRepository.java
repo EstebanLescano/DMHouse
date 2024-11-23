@@ -1,4 +1,4 @@
-package org.esteban.lescano.dmhouse.Repository;
+package org.esteban.lescano.dmhouse.repository;
 
 import org.esteban.lescano.dmhouse.entities.Person;
 import org.springframework.data.jpa.repository.JpaRepository;

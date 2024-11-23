@@ -56,7 +56,7 @@ public enum TransactionTypeEnum {
 }
 
 public enum TransactionConceptEnum {
-	RECHARGE, // Este es siempre 0
+	LOAD, // Este es siempre 0
 	SEND // Este es siempre 1
 }
 public enum ResultadoTransaccionEnum {

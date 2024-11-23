@@ -36,7 +36,6 @@ private String money;
 private Wallet wallet;
 
 @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-@LazyCollection(LazyCollectionOption.FALSE)
 private List<Transaction> transactions = new ArrayList<>();
 
 }

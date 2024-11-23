@@ -1,6 +1,6 @@
-package org.esteban.lescano.dmhouse.Services;
+package org.esteban.lescano.dmhouse.services;
 
-import org.esteban.lescano.dmhouse.Repository.PersonRepository;
+import org.esteban.lescano.dmhouse.repository.PersonRepository;
 import org.esteban.lescano.dmhouse.entities.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
