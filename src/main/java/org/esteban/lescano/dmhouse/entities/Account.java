@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,5 +35,9 @@ private Wallet wallet;
 
 @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 private List<Transaction> transactions = new ArrayList<>();
+
+public void setWallet (Wallet wallet){
+	this.wallet = wallet;
+}
 
 }

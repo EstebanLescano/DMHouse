@@ -29,7 +29,17 @@ private Person person;
 @OneToMany(mappedBy = "wallet_id",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 private List<Account> account = new ArrayList<>();
 
-public void addAccount(Account pesos) {
-	account.add(pesos);
+public void addAccount(Account account) {
+	this.account.add(account);
+	account.setWallet(this);
+}
+
+public Account getAccount (String money) {
+	for (Account account : this.account) {
+		if (account.getMoney().equals(money)) {
+			return account;
+		}
+	}
+	return null;
 }
 }
