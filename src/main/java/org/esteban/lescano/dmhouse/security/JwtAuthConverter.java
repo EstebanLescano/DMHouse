@@ -1,5 +1,7 @@
 package org.esteban.lescano.dmhouse.security;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,11 +19,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public abstract class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken>{
+public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
-    private final  JwtAuthConverterProperties properties;
+    private final JwtAuthConverterProperties properties;
 
     public JwtAuthConverter(JwtAuthConverterProperties properties) {
         this.properties = properties;
@@ -32,7 +34,17 @@ public abstract class JwtAuthConverter implements Converter<Jwt, AbstractAuthent
         Collection<GrantedAuthority> authorities = Stream.concat(
                 jwtGrantedAuthoritiesConverter.convert(jwt).stream(),
                 extractResourceRoles(jwt).stream()).collect(Collectors.toSet());
-        return new JwtAuthenticationToken(jwt, authorities,getPrincipalClaimName(jwt));
+        return new JwtAuthenticationToken(jwt, authorities, getPrincipalClaimName(jwt));
+    }
+
+    @Override
+    public JavaType getInputType(TypeFactory typeFactory) {
+        return null;
+    }
+
+    @Override
+    public JavaType getOutputType(TypeFactory typeFactory) {
+        return null;
     }
 
     private String getPrincipalClaimName(Jwt jwt) {
@@ -43,9 +55,9 @@ public abstract class JwtAuthConverter implements Converter<Jwt, AbstractAuthent
         return jwt.getClaim(claimName);
     }
 
-    private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt){
+    private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
         Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-        Map<String, Object>resource;
+        Map<String, Object> resource;
         Collection<String> resourceRoles;
         if (resourceAccess == null
                 || (resource = (Map<String, Object>) resourceAccess.get(properties.getResourceId())) == null
@@ -53,9 +65,8 @@ public abstract class JwtAuthConverter implements Converter<Jwt, AbstractAuthent
             return Set.of();
         } else {
             return resourceRoles.stream()
-                    .map(role ->  new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toSet());
         }
     }
-
 }
