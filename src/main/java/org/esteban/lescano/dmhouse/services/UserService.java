@@ -1,5 +1,6 @@
 package org.esteban.lescano.dmhouse.services;
 
+import org.esteban.lescano.dmhouse.mensajeria.EmailService;
 import org.esteban.lescano.dmhouse.repository.UsersRepository;
 import org.esteban.lescano.dmhouse.repository.WalletRepository;
 import org.esteban.lescano.dmhouse.entities.*;
@@ -15,12 +16,14 @@ private final UsersRepository usersRepository;
 private final PersonService personService;
 private final WalletService walletService;
 private final WalletRepository walletRepository;
+private final EmailService emailService;
 
-public UserService(UsersRepository usersRepository, PersonService personService, WalletService walletService, WalletRepository walletRepository) {
+public UserService(UsersRepository usersRepository, PersonService personService, WalletService walletService, WalletRepository walletRepository, EmailService emailService) {
 	this.usersRepository = usersRepository;
 	this.personService = personService;
 	this.walletService = walletService;
 	this.walletRepository = walletRepository;
+    this.emailService = emailService;
 }
 
 public Users createUsers(String name, int country, int DocumentType, String document, Date birthdate,
@@ -60,10 +63,10 @@ public Users createUsers(String name, int country, int DocumentType, String docu
 	person.setWallet(wallet);
 	walletService.save(wallet);
 	
-	walletService.loadBalance(new BigDecimal(500),"ARS", wallet.getWallet_id(),
+	walletService.loadBalance(new BigDecimal(500),"ARS", wallet.getWalletId(),
 			Transaction.TransactionConceptEnum.LOAD, "Bienvenido a su user");
 	
-	emailService.SendEmail(users.getEmail(), "Bienvenido a DmHouse", "Bienvenido a DmHouse");
+//	emailService.sendEmail(users.getEmail(), "Bienvenido a DmHouse", "Bienvenido a DmHouse");
 	return users;
 }
 

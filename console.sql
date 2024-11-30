@@ -25,8 +25,8 @@ CREATE TABLE wallet (
 );
 
 
-CREATE TABLE acount (
-    acount_id SERIAL PRIMARY KEY,         -- Identificador único auto-incremental
+CREATE TABLE account (
+    account_id SERIAL PRIMARY KEY,         -- Identificador único auto-incremental
     balance NUMERIC(19, 2),                 -- Saldo con precisión para manejar decimales
     money VARCHAR(255),                  -- Moneda representada como texto
     wallet_id INTEGER,                    -- Clave foránea hacia la tabla wallet

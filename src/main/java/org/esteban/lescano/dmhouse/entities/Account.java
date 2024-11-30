@@ -23,14 +23,16 @@ public class Account {
 @Id
 @Column(name = "account_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-private Integer acountId;
+private Integer accountId;
 
+	@Column(name = "balance", nullable = false)
 private BigDecimal balance;
 
+	@Column(name = "money", nullable = false)
 private String money;
 
-@ManyToOne
-@JoinColumn(name = "wallet_id", referencedColumnName = "wallet_id")
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "wallet_id", referencedColumnName = "walletId")
 private Wallet wallet;
 
 @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)

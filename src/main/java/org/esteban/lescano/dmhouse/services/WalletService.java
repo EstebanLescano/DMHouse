@@ -7,7 +7,6 @@ import org.esteban.lescano.dmhouse.repository.WalletRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.stream.Collectors;
 
 @Service
 public class WalletService {
@@ -24,7 +23,7 @@ public WalletService(WalletRepository walletRepository) {
 
 public void loadBalance(BigDecimal balance, String money, Integer walletId, Transaction.TransactionConceptEnum concept, String details){
 	Wallet wallet = this.findWalletForId(walletId);
-	loadBalance(balance, money, wallet.getWallet_id(), concept, details);
+	loadBalance(balance, money, wallet.getWalletId(), concept, details);
 }
 
 public Wallet findWalletForId(Integer id) {
@@ -35,7 +34,7 @@ public BigDecimal BalanceRequest(Integer walletId, String money){
 	return walletRepository.findByWalletId(walletId)
 			       .getAccount()
 			       .stream()
-			       .filter(cuenta -> cuenta.getAcountId().equals(money))
+			       .filter(cuenta -> cuenta.getAccountId().equals(money))
 			       .map(Account::getBalance)
 			       .findFirst()
 			       .orElse(BigDecimal.ZERO);

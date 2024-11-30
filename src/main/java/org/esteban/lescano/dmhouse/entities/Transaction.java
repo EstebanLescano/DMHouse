@@ -21,25 +21,39 @@ public class Transaction {
 @Column(name = "transaction_id")
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Integer transactionId;
+
 @ManyToOne
-@JoinColumn(name = "acount_id", referencedColumnName = "acount_id")
+@JoinColumn(name = "wallet_id", referencedColumnName = "wallet_id")
 private Account account;
+
 private Date DateTransaction;
+
 @Column(name = "state_id")
 private Integer stateId;
+
 private BigDecimal amount;
+
 private String currency;
+
+@Enumerated(EnumType.STRING)
 @Column(name = "transaction_type")
 private TransactionTypeEnum transactionType;
+
+@Enumerated(EnumType.STRING)
 @Column(name = "transaction_concept")
 private TransactionConceptEnum transactionConcept;
+
 private String details;
+
 @Column(name = "from_user_id")
 private Integer fromUserId;
+
 @Column(name = "to_user_id")
 private Integer toUserId;
+
 @Column(name = "from_account_id")
 private Integer fromAccountId;
+
 @Column(name = "to_account_id")
 private Integer toAccountId;
 

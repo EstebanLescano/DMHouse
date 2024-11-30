@@ -23,10 +23,10 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
-    private final JwtAuthConverterProperties properties;
+    private final JwtAuthConverterProperties jwtProperties;
 
-    public JwtAuthConverter(JwtAuthConverterProperties properties) {
-        this.properties = properties;
+    public JwtAuthConverter(JwtAuthConverterProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
     }
 
     @Override
@@ -49,8 +49,8 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
     private String getPrincipalClaimName(Jwt jwt) {
         String claimName = JwtClaimNames.SUB;
-        if (properties.getPrincipalAttribute() != null) {
-            claimName = properties.getPrincipalAttribute();
+        if (jwtProperties.getPrincipalAttribute() != null) {
+            claimName = jwtProperties.getPrincipalAttribute();
         }
         return jwt.getClaim(claimName);
     }
@@ -60,7 +60,7 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         Map<String, Object> resource;
         Collection<String> resourceRoles;
         if (resourceAccess == null
-                || (resource = (Map<String, Object>) resourceAccess.get(properties.getResourceId())) == null
+                || (resource = (Map<String, Object>) resourceAccess.get(jwtProperties.getResourceId())) == null
                 || (resourceRoles = (Collection<String>) resource.get("roles")) == null) {
             return Set.of();
         } else {
