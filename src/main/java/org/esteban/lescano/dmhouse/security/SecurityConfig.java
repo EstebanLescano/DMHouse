@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**")
         );
         http.authorizeHttpRequests(auth -> auth
-                // Permitir acceso a Swagger y OpenAPI
+                // Permitir acceso a Swagger 
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 // Configurar rutas específicas
                 .requestMatchers(HttpMethod.GET, "/wallet/**").permitAll()

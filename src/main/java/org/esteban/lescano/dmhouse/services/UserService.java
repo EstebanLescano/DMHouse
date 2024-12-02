@@ -1,5 +1,6 @@
 package org.esteban.lescano.dmhouse.services;
 
+import org.esteban.lescano.dmhouse.Exceptions.WalletNotFoundException;
 import org.esteban.lescano.dmhouse.mensajeria.EmailService;
 import org.esteban.lescano.dmhouse.repository.UsersRepository;
 import org.esteban.lescano.dmhouse.repository.WalletRepository;
@@ -18,7 +19,8 @@ private final WalletService walletService;
 private final WalletRepository walletRepository;
 private final EmailService emailService;
 
-public UserService(UsersRepository usersRepository, PersonService personService, WalletService walletService, WalletRepository walletRepository, EmailService emailService) {
+public UserService(UsersRepository usersRepository, PersonService personService, WalletService walletService,
+                   WalletRepository walletRepository, EmailService emailService) {
 	this.usersRepository = usersRepository;
 	this.personService = personService;
 	this.walletService = walletService;
@@ -27,7 +29,7 @@ public UserService(UsersRepository usersRepository, PersonService personService,
 }
 
 public Users createUsers(String name, int country, int DocumentType, String document, Date birthdate,
-                         String email, String password) {
+                         String email, String password) throws WalletNotFoundException {
 	/*
 	 * 1.Metodo: Crear Usuario 1.1-->Crear una Persona(setearle un usuario)
 	 * 1.2-->crear un usuario 1.3-->Crear una billetera(setearle una persona)
