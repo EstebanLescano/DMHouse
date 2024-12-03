@@ -20,45 +20,71 @@ public class WalletService {
 		this.walletRepository = walletRepository;
 	}
 
-	public void save(Wallet wallet) {
-		walletRepository.save(wallet);
-	}
-
-	public Wallet findWalletForId(Integer id) {
-		return walletRepository.findByWalletId(id);
-	}
-
+	// Obtener los saldos de las cuentas de una wallet
 	public List<BalanceResponse> getWalletBalances(Integer walletId) throws WalletNotFoundException {
-		Wallet wallet = this.findWalletForId(walletId);
+		Wallet wallet = walletRepository.findByWalletId(walletId);
+
 		if (wallet == null) {
 			throw new WalletNotFoundException("Wallet with ID " + walletId + " not found.");
 		}
 
+		// Filtra las cuentas que tienen saldo y mapea a una lista de BalanceResponse
 		return wallet.getAccounts().stream()
 				.filter(account -> account.getBalance() != null)
 				.map(account -> new BalanceResponse(account.getBalance(), account.getMoney()))
 				.toList();
 	}
 
-	public BigDecimal balanceRequest(Integer walletId, String money) {
-		return walletRepository.findByWalletId(walletId)
-				.getAccount()
-				.stream()
+	// Obtener el saldo específico de una moneda
+	public BigDecimal balanceRequest(Integer walletId, String money) throws WalletNotFoundException {
+		Wallet wallet = walletRepository.findByWalletId(walletId);
+
+		if (wallet == null) {
+			throw new WalletNotFoundException("Wallet with ID " + walletId + " not found.");
+		}
+
+		// Filtra la cuenta por moneda y devuelve el balance, o BigDecimal.ZERO si no encuentra
+		return wallet.getAccounts().stream()
 				.filter(account -> account.getMoney().equals(money))
 				.map(Account::getBalance)
 				.findFirst()
 				.orElse(BigDecimal.ZERO);
 	}
 
-	public void loadBalance(BigDecimal balance, String money, Integer walletId, Transaction.TransactionConceptEnum concept, String details) throws WalletNotFoundException {
-		Wallet wallet = this.findWalletForId(walletId);
+	// Cargar saldo en una wallet
+	public void loadBalance(BigDecimal balance, String money, Integer walletId,
+	                        Transaction.TransactionConceptEnum concept, String details)
+			throws WalletNotFoundException {
+		Wallet wallet = walletRepository.findByWalletId(walletId);
+
 		if (wallet == null) {
 			throw new WalletNotFoundException("Wallet with ID " + walletId + " not found.");
 		}
-		// Lógica adicional para cargar saldo
+
+		// Busca la cuenta asociada a la moneda
+		Account account = wallet.getAccounts().stream()
+				.filter(acc -> acc.getMoney().equals(money))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Account with money " + money + " not found."));
+
+		// Actualiza el saldo
+		account.setBalance(account.getBalance().add(balance));
+
+		// Registra la transacción o guarda detalles adicionales
+		Transaction transaction = new Transaction(balance, concept, details);
+		account.addTransaction(transaction);
+		walletRepository.save(wallet); //guarda los cambios
 	}
 
-	public BalanceResponse getBalance(Integer id, String money) {
-		return null;
+	// Obtener un BalanceResponse específico por id y moneda
+	public BalanceResponse getBalance(Integer walletId, String money) throws WalletNotFoundException {
+		BigDecimal balance = balanceRequest(walletId, money);
+		return new BalanceResponse(balance, money);
 	}
+
+	// Obtener todas las wallets asociadas a un ID de usuario
+	public List<Wallet> getWallets(Integer userId) {
+		return walletRepository.findAllByUserId(userId);
+	}
+
 }

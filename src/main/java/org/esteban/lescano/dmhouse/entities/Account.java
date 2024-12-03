@@ -14,7 +14,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity
 @Table(name = "account")
@@ -31,6 +30,7 @@ private BigDecimal balance;
 	@Column(name = "money", nullable = false)
 private String money;
 
+@Setter
 @ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "wallet_id", referencedColumnName = "walletId")
 private Wallet wallet;
@@ -38,8 +38,10 @@ private Wallet wallet;
 @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 private List<Transaction> transactions = new ArrayList<>();
 
-public void setWallet (Wallet wallet){
-	this.wallet = wallet;
-}
-
+    public void addTransaction(Transaction transaction) {
+		if (transaction != null) {
+			transaction.setAccount(this);
+			this.transactions.add(transaction);
+		}
+	}
 }

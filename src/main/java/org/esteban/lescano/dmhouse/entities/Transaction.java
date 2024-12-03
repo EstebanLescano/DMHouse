@@ -57,7 +57,13 @@ private Integer fromAccountId;
 @Column(name = "to_account_id")
 private Integer toAccountId;
 
-/***
+	public Transaction(BigDecimal balance, TransactionConceptEnum concept, String details) {
+		this.amount = balance;
+		this.transactionConcept = concept;
+		this.details = details;
+	}
+
+	/***
  * En este caso es un ENUMERADO con numeracion default En JAVA. Estos comienzan
  * desde 0 y si intercambiamos el orden el 0 pasa a ser siempre el primero. Si
  * quisieramos tener uno customizado, en JAVA es mas complejo(se ahoga en un

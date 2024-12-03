@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.esteban.lescano.dmhouse.models.response.BalanceResponse.*;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
-@Tag(name = "Wallet API", description = "API para operaciones relacionadas con Wallets") // Etiqueta para organizar el grupo de endpoints en Swagger
+@RequestMapping("/dmhouse")
+@Tag(name = "Wallet API")
 public class WalletController {
 
 private final WalletService walletService;
@@ -50,11 +51,11 @@ public WalletController(WalletService walletService) {
 					@ApiResponse(responseCode = "400", description = "Solicitud inválida")
 			}
 	)
-@GetMapping("/wallet/{id}/balance/{money}")
-public ResponseEntity<BalanceResponse> getBalance(@Parameter(description = "ID de la wallet", example = "1") @PathVariable Integer id,
-	                                                @Parameter(description = "Moneda para el balance", example = "USD") @PathVariable String money) {
+	@GetMapping("/wallet/{id}/balance/{money}")
+	public ResponseEntity<BalanceResponse> getBalance(@Parameter(description = "ID de la wallet", example = "1") @PathVariable Integer id,
+	                                                  @Parameter(description = "Moneda para el balance", example = "USD") @PathVariable String money) throws WalletNotFoundException {
 
-	return ResponseEntity.ok(walletService.getBalance(id, money));
+		return ResponseEntity.ok(walletService.getBalance(id, money));
 }
 
 	@Operation(
@@ -107,4 +108,22 @@ public ResponseEntity<BalanceResponse> getBalance(@Parameter(description = "ID d
 		return ResponseEntity.ok(balances);
 	}
 
+	@Operation(
+			summary = "Obtiene una wallet",
+			description = "Retorna wallet correspondiente al ID y la moneda especificada.",
+			responses = {
+					@ApiResponse(
+							responseCode = "200",
+							description = "Balance obtenido exitosamente",
+							content = @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
+					),
+					@ApiResponse(responseCode = "404", description = "Wallet no encontrada"),
+					@ApiResponse(responseCode = "400", description = "Solicitud inválida")
+			}
+	)
+	@GetMapping("/wallet/{id}")
+	public ResponseEntity<List<Wallet>> getWallets() {
+		List<Wallet> wallets = walletService.findWalletForId(id);
+		return ResponseEntity.ok(wallets);
+	}
 }
