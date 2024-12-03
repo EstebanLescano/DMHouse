@@ -29,44 +29,40 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @Slf4j
 @RestController
 @RequestMapping("/dmhouse")
-@Tag(name = "Wallet API")
+@Tag(name = "Wallet API", description = "API para la gestión de wallets y balances.")
 public class WalletController {
 
-private final WalletService walletService;
+	private final WalletService walletService;
 
-public WalletController(WalletService walletService) {
-	this.walletService = walletService;
-}
+	public WalletController(WalletService walletService) {
+		this.walletService = walletService;
+	}
 
 	@Operation(
 			summary = "Obtiene el balance de una wallet",
 			description = "Retorna el balance de la wallet correspondiente al ID y la moneda especificada.",
 			responses = {
-					@ApiResponse(
-							responseCode = "200",
-							description = "Balance obtenido exitosamente",
-							content = @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
-					),
+					@ApiResponse(responseCode = "200", description = "Balance obtenido exitosamente"),
 					@ApiResponse(responseCode = "404", description = "Wallet no encontrada"),
 					@ApiResponse(responseCode = "400", description = "Solicitud inválida")
 			}
 	)
-	@GetMapping("/wallet/{id}/balance/{money}")
-	public ResponseEntity<BalanceResponse> getBalance(@Parameter(description = "ID de la wallet", example = "1") @PathVariable Integer id,
-	                                                  @Parameter(description = "Moneda para el balance", example = "USD") @PathVariable String money) throws WalletNotFoundException {
-
-		return ResponseEntity.ok(walletService.getBalance(id, money));
-}
+	@GetMapping("/wallet/{id}/balance")
+	public ResponseEntity<?> getBalances(
+			@Parameter(description = "ID de la wallet", example = "1") @PathVariable Integer id,
+			@Parameter(description = "Moneda opcional para filtrar balances", example = "USD") @RequestParam(required = false) String currency
+	) {
+		if (currency != null) {
+			return ResponseEntity.ok(walletService.getBalance(id, currency));
+		}
+		return ResponseEntity.ok(walletService.getWalletBalances(id));
+	}
 
 	@Operation(
 			summary = "Carga saldo en una wallet",
 			description = "Permite cargar saldo en la wallet especificada mediante una solicitud.",
 			responses = {
-					@ApiResponse(
-							responseCode = "200",
-							description = "Carga realizada exitosamente",
-							content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionResponse.class))
-					),
+					@ApiResponse(responseCode = "200", description = "Carga realizada exitosamente"),
 					@ApiResponse(responseCode = "404", description = "Wallet no encontrada"),
 					@ApiResponse(responseCode = "400", description = "Solicitud inválida")
 			}
@@ -74,56 +70,23 @@ public WalletController(WalletService walletService) {
 	@PostMapping("/wallet/{id}/load")
 	public ResponseEntity<TransactionResponse> loadBalance(
 			@Parameter(description = "ID de la wallet", example = "1") @PathVariable Integer id,
-			@RequestBody LoadBalanceRequest load) throws WalletNotFoundException {
-
-		TransactionResponse response = new TransactionResponse();
-
-		walletService.loadBalance(load.amount, load.currency, id, load.concept, "Detalle de envío de dinero");
-
-		response.isOK = true;
-		response.message = "Carga de saldo realizada exitosamente.";
-
+			@RequestBody LoadBalanceRequest load
+	) {
+		walletService.loadBalance(load.getAmount(), load.getCurrency(), id, load.getConcept(), "Detalle de envío de dinero");
+		TransactionResponse response = new TransactionResponse(true, "Carga de saldo realizada exitosamente.");
 		return ResponseEntity.ok(response);
 	}
 
 	@Operation(
-			summary = "Obtiene el balance de una wallet",
-			description = "Retorna el balance de la wallet correspondiente al ID y la moneda especificada.",
+			summary = "Obtiene todas las wallets de un usuario",
+			description = "Retorna todas las wallets asociadas al usuario especificado por su ID.",
 			responses = {
-					@ApiResponse(
-							responseCode = "200",
-							description = "Balance obtenido exitosamente",
-							content = @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
-					),
-					@ApiResponse(responseCode = "404", description = "Wallet no encontrada"),
-					@ApiResponse(responseCode = "400", description = "Solicitud inválida")
-			}
-	)
-	@GetMapping("/wallet/{id}/balance")
-	public ResponseEntity<List<BalanceResponse>> getBalance(
-			@Parameter(description = "ID de la wallet", example = "1")
-			@PathVariable Integer id) throws WalletNotFoundException {
-
-		List<BalanceResponse> balances = walletService.getWalletBalances(id);
-		return ResponseEntity.ok(balances);
-	}
-
-	@Operation(
-			summary = "Obtiene una wallet",
-			description = "Retorna wallet correspondiente al ID y la moneda especificada.",
-			responses = {
-					@ApiResponse(
-							responseCode = "200",
-							description = "Balance obtenido exitosamente",
-							content = @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponse.class))
-					),
-					@ApiResponse(responseCode = "404", description = "Wallet no encontrada"),
-					@ApiResponse(responseCode = "400", description = "Solicitud inválida")
+					@ApiResponse(responseCode = "200", description = "Wallets obtenidas exitosamente"),
+					@ApiResponse(responseCode = "404", description = "Usuario no encontrado")
 			}
 	)
 	@GetMapping("/wallet/{id}")
-	public ResponseEntity<List<Wallet>> getWallets() {
-		List<Wallet> wallets = walletService.findWalletForId(id);
-		return ResponseEntity.ok(wallets);
+	public ResponseEntity<List<Wallet>> getWallets(@PathVariable Integer id) {
+		return ResponseEntity.ok(walletService.getWallets(id));
 	}
 }
