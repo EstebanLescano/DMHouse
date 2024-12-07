@@ -1,40 +1,122 @@
 package org.esteban.lescano.dmhouse.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.util.Date;
 
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
 @Entity
 @Table(name = "person")
 public class Person {
 
-@Id
-@Column(name = "person_id")
-@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "person_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer Id;
 
-private Integer personId;
+    private String name;
 
-private String name;
+    private String lastName;
 
-@Column(name = "country_id")
-private Integer countryId;
+    private String email;
 
-@Column(name = "type_documen_id")
-private Integer typeDocumenId;
+    private String phone;
 
-private String documen;
+    @Column(name = "dni", unique = true, nullable = false)
+    private String dni; // Documento único
 
-@Column(name = "birthdate")
-private Date birthdate;
+    @Column(name = "country_id")
+    private Integer countryId;
 
-@OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
-private Users users;
+    @Column(name = "type_document_id")
+    private Integer typeDocumentId;
 
-@OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
-private Wallet wallet;
+
+    @Column(name = "birthdate")
+    private Date birthdate;
+
+    @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
+    private Client client;
+
+    public Person() {
+    }
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer personId) {
+        this.Id = personId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public Integer getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
+    }
+
+    public Integer getTypeDocumentId() {
+        return typeDocumentId;
+    }
+
+    public void setTypeDocumentId(Integer typeDocumentId) {
+        this.typeDocumentId = typeDocumentId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
 }

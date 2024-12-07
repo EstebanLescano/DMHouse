@@ -1,131 +1,78 @@
 package org.esteban.lescano.dmhouse.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.esteban.lescano.dmhouse.enums.StatusTransactionEnum;
+import org.esteban.lescano.dmhouse.enums.TransactionConceptEnum;
+import org.esteban.lescano.dmhouse.enums.TransactionTypeEnum;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Getter
 @Setter
+@Getter
 @ToString
 @RequiredArgsConstructor
 @Entity
 @Table(name = "transaction")
 public class Transaction {
 
-@Id
-@Column(name = "transaction_id")
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Integer transactionId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "transaction_id")
+	private Integer transactionId;
 
-@ManyToOne
-@JoinColumn(name = "wallet_id", referencedColumnName = "wallet_id")
-private Account account;
+	@ManyToOne
+	@JoinColumn(name = "from_account_id", referencedColumnName = "account_id", nullable = false)
+	private Account fromAccount;
 
-private Date DateTransaction;
+	@ManyToOne
+	@JoinColumn(name = "to_account_id", referencedColumnName = "account_id")
+	private Account toAccount;
 
-@Column(name = "state_id")
-private Integer stateId;
+	@Column(name = "transaction_date", nullable = false)
+	private Date transactionDate;
 
-private BigDecimal amount;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "transaction_type", nullable = false)
+	private TransactionTypeEnum transactionType;
 
-private String currency;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "transaction_concept", nullable = false)
+	private TransactionConceptEnum transactionConcept;
 
-@Enumerated(EnumType.STRING)
-@Column(name = "transaction_type")
-private TransactionTypeEnum transactionType;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status", nullable = false)
+	private StatusTransactionEnum status;
 
-@Enumerated(EnumType.STRING)
-@Column(name = "transaction_concept")
-private TransactionConceptEnum transactionConcept;
+	@Column(name = "amount", nullable = false)
+	@Positive
+	private BigDecimal amount;
 
-private String details;
+	@Column(name = "currency", nullable = false)
+	private String currency;
 
-@Column(name = "from_user_id")
-private Integer fromUserId;
+	@ManyToOne
+	@JoinColumn(name = "from_user_id", referencedColumnName = "client_id")
+	private Client fromUser;
 
-@Column(name = "to_user_id")
-private Integer toUserId;
+	@ManyToOne
+	@JoinColumn(name = "to_user_id", referencedColumnName = "client_id")
+	private Client toUser;
 
-@Column(name = "from_account_id")
-private Integer fromAccountId;
+	@Column(name = "details")
+	private String details;
 
-@Column(name = "to_account_id")
-private Integer toAccountId;
-
-	public Transaction(BigDecimal balance, TransactionConceptEnum concept, String details) {
-		this.amount = balance;
+	// Constructor útil
+	public Transaction(BigDecimal amount, TransactionConceptEnum concept, String details, StatusTransactionEnum status) {
+		this.amount = amount;
 		this.transactionConcept = concept;
 		this.details = details;
+		this.status = status;
+		this.transactionDate = new Date(); // Fecha actual por defecto
 	}
-
-	/***
- * En este caso es un ENUMERADO con numeracion default En JAVA. Estos comienzan
- * desde 0 y si intercambiamos el orden el 0 pasa a ser siempre el primero. Si
- * quisieramos tener uno customizado, en JAVA es mas complejo(se ahoga en un
- * vaso de agua)
- * estos enum debria hacerlos en otra clase que sea exclusiva
- */
-public enum TransactionTypeEnum {
-	outgoing, // Este es siempre 0
-	incoming // Este es siempre 1
-}
-
-public enum TransactionConceptEnum {
-	LOAD, // Este es siempre 0
-	SEND // Este es siempre 1
-}
-public enum ResultadoTransaccionEnum {
-	NEGATIVE_IMPORT_ERROR,
-	INITIATED,
-	INSUFFICIENT_BALANCE,
-	DESTINATION_WALLET_NOT_FOUND,
-	SOURCE_WALLET_NOT_FOUND,
-	DAILY_LIMIT_REACHED,
-	NONEXISTENT_ORIGIN_ACCOUNT,
-	NONEXISTENT_DESTINATION_ACCOUNT,
-	WILL_WANT_TO_PAY_ITSELF,
-	NONEXISTENT_DESTINATION_EMAIL
-}
-
-/***
- * En este caso es un ENUMERADO con numeracion customizada En JAVA, los
- * enumerados con numeros customizados deben tener un constructor y un
- * comparador para poder funcionar correctamente
- */
-// Este es un ejemplo de enumerado de estados customizados.
-public enum StatusTransactionEnum {
-	PENDING(0),
-	SEND(1),
-	RECEIVED(2),
-	EXECUTED(4),
-	MISSING_FUNDS(80),
-	GENERAL_ERROR(99);
-	
-	private final int value;
-	// NOTE: Enum constructor tiene que estar en privado
-	private StatusTransactionEnum(int value) {
-		this.value = value;
-	}
-	
-	public int getValue() {
-		return value;
-	}
-	
-	public static StatusTransactionEnum parse(int id) {
-		StatusTransactionEnum status = null; // Default
-		for (StatusTransactionEnum item : StatusTransactionEnum.values()) {
-			if (item.getValue() == id) {
-				status = item;
-				break;
-			}
-		}
-		return status;
-	}
-}
-
 }

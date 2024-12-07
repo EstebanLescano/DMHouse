@@ -1,54 +1,50 @@
 package org.esteban.lescano.dmhouse.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
 @Entity
 @Table(name = "wallet")
 public class Wallet {
 
 	@Id
-	@Column(name = "walletId", unique = true)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer walletId;
+	@Column(name = "wallet_id", unique = true)
+	private Integer id;
 
-	@OneToOne
-	@JoinColumn(name = "person_id", referencedColumnName = "person_id")
-	private Person person;
+	@ManyToOne
+	@JoinColumn(name = "client_id", referencedColumnName = "client_id", nullable = false)
+	private Client client;
 
-	@OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Account> account = new ArrayList<>();
-
-	public Wallet(Person person) {
-		this.person = person;
-	}
-
-	public List<Account> getAccounts() {
-		return account;
-	}
+	@OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Account> accounts = new ArrayList<>();
 
 	public Wallet() {
 	}
 
-	public void addAccount(Account account) {
-		this.account.add(account);
-		account.setWallet(this);
+	public Integer getId() {
+		return id;
 	}
 
-	public Account getAccount(String money) {
-		for (Account account : this.account) {
-			if (account.getMoney().equals(money)) {
-				return account;
-			}
-		}
-		return null;
+	public void setId(Integer walletId) {
+		this.id = walletId;
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+	public List<Account> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(List<Account> accounts) {
+		this.accounts = accounts;
 	}
 }

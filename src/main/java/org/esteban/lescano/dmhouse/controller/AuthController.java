@@ -1,68 +1,61 @@
 package org.esteban.lescano.dmhouse.controller;
 
 
-import org.esteban.lescano.dmhouse.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.esteban.lescano.dmhouse.models.AuthRequest;
+import org.esteban.lescano.dmhouse.models.AuthResponse;
+import org.esteban.lescano.dmhouse.models.ClientDTO;
+import org.esteban.lescano.dmhouse.security.JwtTokenUtil;
+import org.esteban.lescano.dmhouse.services.ClientService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * AuthController
  */
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService userDetailsService;
+    private final ClientService clientService;
 
-    /*
-     * @Autowired private AuthenticationManager authenticationManager;
-     */
-    @Autowired
-    private JWTTokenUtil jwtTokenUtil;
-
-    @Autowired
-    private JWTUserDetailsService userDetailsService;
-    //Auth : authentication ->
-    @PostMapping("auth/register")
-    public ResponseEntity<RegistrationResponse> postRegisterUser(@RequestBody RegistrationRequest req) {
-        RegistrationResponse r = new RegistrationResponse();
-
-        Usuario usuario = usuarioService.crearUsuario(req.fullName, req.country, req.identificationType, req.identification, req.birthDate, req.email, req.password);
-
-        r.isOk = true;
-        r.message = "Te registraste con exitoooo!!!!!!!";
-        r.userId = usuario.getUsuarioId(); // <-- AQUI ponemos el numerito de id para darle a front!
-        return ResponseEntity.ok(r);
-
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserDetailsService userDetailsService, ClientService clientService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.clientService = clientService;
     }
 
-    @PostMapping("auth/login") // probando nuestro login
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest authenticationRequest)
-            throws Exception {
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+            authRequest.getFullname(),
+            authRequest.getPassword()
+        ));
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getFullname());
+        final String jwt = jwtTokenUtil.generateToken(userDetails);
 
-        usuarioService.login(authenticationRequest.username, authenticationRequest.password);
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.username);
-
-        String token = jwtTokenUtil.generateToken(userDetails);
-
-        //Cambio para que devuelva el full perfil
-        Usuario u = usuarioService.buscarPorUsername(authenticationRequest.username);
-
-        LoginResponse r = new LoginResponse();
-        r.id = u.getUsuarioId();
-        r.billeteraId = u.getPersona().getBilletera().getBilleteraId();
-        r.username = authenticationRequest.username;
-        r.email = u.getEmail();
-        r.token = token;
-
-        return ResponseEntity.ok(r);
-        //return ResponseEntity.ok(new JwtResponse(token));
-
+        return ResponseEntity.ok(new AuthResponse(jwt));
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody ClientDTO dto) {
+        if (clientService.registerUser(dto)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 }
+
+

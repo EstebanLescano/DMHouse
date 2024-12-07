@@ -1,72 +1,32 @@
 package org.esteban.lescano.dmhouse.security;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.core.convert.converter.Converter;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
-public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
-
-    private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-
-    private final JwtAuthConverterProperties jwtProperties;
-
-    public JwtAuthConverter(JwtAuthConverterProperties jwtProperties) {
-        this.jwtProperties = jwtProperties;
-    }
+public class JwtAuthConverter implements Converter <Jwt, AbstractAuthenticationToken> {
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        Collection<GrantedAuthority> authorities = Stream.concat(
-                jwtGrantedAuthoritiesConverter.convert(jwt).stream(),
-                extractResourceRoles(jwt).stream()).collect(Collectors.toSet());
-        return new JwtAuthenticationToken(jwt, authorities, getPrincipalClaimName(jwt));
+        Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
+        return new JwtAuthenticationToken(jwt, authorities);
     }
 
-    @Override
-    public JavaType getInputType(TypeFactory typeFactory) {
-        return null;
-    }
-
-    @Override
-    public JavaType getOutputType(TypeFactory typeFactory) {
-        return null;
-    }
-
-    private String getPrincipalClaimName(Jwt jwt) {
-        String claimName = JwtClaimNames.SUB;
-        if (jwtProperties.getPrincipalAttribute() != null) {
-            claimName = jwtProperties.getPrincipalAttribute();
-        }
-        return jwt.getClaim(claimName);
-    }
-
-    private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
-        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-        Map<String, Object> resource;
-        Collection<String> resourceRoles;
-        if (resourceAccess == null
-                || (resource = (Map<String, Object>) resourceAccess.get(jwtProperties.getResourceId())) == null
-                || (resourceRoles = (Collection<String>) resource.get("roles")) == null) {
-            return Set.of();
-        } else {
-            return resourceRoles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                    .collect(Collectors.toSet());
-        }
+    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
+        Map<String, Object> claims = jwt.getClaims();
+        List<String> roles = (List<String>) claims.getOrDefault("roles", List.of());
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .collect(Collectors.toList());
     }
 }
