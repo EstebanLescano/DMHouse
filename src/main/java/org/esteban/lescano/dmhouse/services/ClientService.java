@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.esteban.lescano.dmhouse.Exceptions.ClientAlreadyExistsException;
 import org.esteban.lescano.dmhouse.entities.Client;
 import org.esteban.lescano.dmhouse.entities.Person;
-import org.esteban.lescano.dmhouse.entities.Wallet;
-import org.esteban.lescano.dmhouse.mensajeria.EmailService;
-import org.esteban.lescano.dmhouse.models.ClientDTO;
 import org.esteban.lescano.dmhouse.repository.ClientRepository;
 import org.esteban.lescano.dmhouse.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 @Slf4j
 @Service
 @Transactional
@@ -20,15 +18,10 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final PersonRepository personRepository;
-    private final WalletService walletService;
-    private final EmailService emailService;
 
-    public ClientService(ClientRepository usersRepository, PersonService personService, ClientRepository clientRepository, PersonRepository personRepository, WalletService walletService,
-                         EmailService emailService) {
+    public ClientService(ClientRepository clientRepository, PersonRepository personRepository) {
         this.clientRepository = clientRepository;
         this.personRepository = personRepository;
-        this.walletService = walletService;
-        this.emailService = emailService;
     }
 
 
