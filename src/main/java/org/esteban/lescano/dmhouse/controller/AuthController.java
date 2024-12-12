@@ -2,6 +2,8 @@ package org.esteban.lescano.dmhouse.controller;
 
 
 import jakarta.validation.Valid;
+import org.esteban.lescano.dmhouse.Exceptions.ClientAlreadyExistsException;
+import org.esteban.lescano.dmhouse.entities.Client;
 import org.esteban.lescano.dmhouse.models.AuthRequest;
 import org.esteban.lescano.dmhouse.models.AuthResponse;
 import org.esteban.lescano.dmhouse.models.ClientDTO;
@@ -50,11 +52,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody ClientDTO dto) {
-        if (clientService.registerUser(dto)) {
-            return ResponseEntity.ok().build();
+     public ResponseEntity<String> register(@RequestBody Client client) {
+        try {
+            clientService.registerClient(client);
+            return ResponseEntity.ok("Client registered successfully");
+        } catch (ClientAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
 
