@@ -1,12 +1,9 @@
 package org.esteban.lescano.dmhouse.controller;
 
-
-import jakarta.validation.Valid;
 import org.esteban.lescano.dmhouse.Exceptions.ClientAlreadyExistsException;
 import org.esteban.lescano.dmhouse.entities.Client;
 import org.esteban.lescano.dmhouse.models.AuthRequest;
 import org.esteban.lescano.dmhouse.models.AuthResponse;
-import org.esteban.lescano.dmhouse.models.ClientDTO;
 import org.esteban.lescano.dmhouse.security.JwtTokenUtil;
 import org.esteban.lescano.dmhouse.services.ClientService;
 import org.springframework.http.HttpStatus;

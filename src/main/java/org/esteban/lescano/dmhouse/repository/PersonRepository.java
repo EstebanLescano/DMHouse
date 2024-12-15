@@ -12,6 +12,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     Optional<Person> findByDni(String dni);
 
-    Optional<Client> findByEmail(String email);
+    Optional<Client> findByClientId(Integer id);
+
 
 }

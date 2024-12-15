@@ -1,6 +1,5 @@
 package org.esteban.lescano.dmhouse.services;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.esteban.lescano.dmhouse.Exceptions.ClientAlreadyExistsException;
 import org.esteban.lescano.dmhouse.entities.Client;
@@ -13,7 +12,6 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@Transactional
 public class ClientService {
 
     private final ClientRepository clientRepository;
@@ -41,7 +39,6 @@ public class ClientService {
             throw new ClientAlreadyExistsException("Client with this email already exists");
         }
         client.setPerson(existingPerson.get());
-        log.info("Saving client: email={}, personId={}", client.getEmail(), client.getPerson().getId());
         clientRepository.save(client);
     }
 }
