@@ -18,7 +18,6 @@ public class JwtAuthConverterProperties {
 
     private  String resourceId;
     private String principalAttribute;
-
     public String getResourceId() {
         return resourceId;
     }
