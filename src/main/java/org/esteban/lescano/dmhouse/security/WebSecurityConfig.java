@@ -1,30 +1,29 @@
 package org.esteban.lescano.dmhouse.security;
 
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
-import org.esteban.lescano.dmhouse.services.ClientDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Configuration
@@ -41,30 +40,20 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
 
-               .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_WHITELIST).permitAll() // Permitir acceso a Swagger
                         .requestMatchers("/DMHouse/login", "/DMHouse/register").permitAll() // Permitir acceso al login y registro
                         .requestMatchers("/users/**").authenticated())
-               .httpBasic(httpBasic -> httpBasic.init(http))
+                .httpBasic(httpBasic -> httpBasic.init(http))
 
 
-               .oauth2ResourceServer(oauth2 -> oauth2
-    .jwt(jwt -> jwt.decoder(jwtDecoder())));
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.decoder(jwtDecoder())));
         return http.build();
     }
 
-   @Bean
-public UserDetailsService userDetailsService(ClientDetailsService clientDetailsService) {
-    return clientDetailsService::loadUserByUsername;
-}
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
+@Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Dominio del frontend
@@ -79,21 +68,34 @@ public UserDetailsService userDetailsService(ClientDetailsService clientDetailsS
         return source;
     }
 
- @Bean
-public JwtDecoder jwtDecoder() {
-    NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
-            .withJwkSetUri("http://localhost:8080/realms/dmh/protocol/openid-connect/certs")
-            .build();
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+                .withJwkSetUri("http://localhost:8080/realms/dmh/protocol/openid-connect/certs")
+                .build();
 
-    // Configuración para validar claims adicionales
-    OAuth2TokenValidator<Jwt> validator = new JwtTimestampValidator();
-    jwtDecoder.setJwtValidator(validator);
+        // Configuración para validar claims adicionales
+        OAuth2TokenValidator<Jwt> validator = new JwtTimestampValidator();
+        jwtDecoder.setJwtValidator(validator);
 
-    return jwtDecoder;
-}
-@Bean
-public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-    return http.getSharedObject(AuthenticationManagerBuilder.class).build();
+        return jwtDecoder;
+    }
+
+    @Bean
+    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthConverter() {
+        return jwt -> {
+            Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
+            return new JwtAuthenticationToken(jwt, authorities);
+        };
+    }
+
+    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
+        Map<String, Object> claims = jwt.getClaims();
+        List<String> roles = (List<String>) claims.getOrDefault("roles", List.of());
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .collect(Collectors.toList());
+    }
 }
 
 //
@@ -146,5 +148,5 @@ public AuthenticationManager authenticationManager(HttpSecurity http) throws Exc
 //        }
 //        return generateKeyPair();
 //    }
-}
+
 

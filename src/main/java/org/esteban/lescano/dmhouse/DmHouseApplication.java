@@ -1,7 +1,6 @@
 package org.esteban.lescano.dmhouse;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import org.esteban.lescano.dmhouse.security.JwtAuthConverterProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

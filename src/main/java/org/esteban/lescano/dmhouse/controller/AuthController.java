@@ -4,7 +4,6 @@ import org.esteban.lescano.dmhouse.Exceptions.ClientAlreadyExistsException;
 import org.esteban.lescano.dmhouse.entities.Client;
 import org.esteban.lescano.dmhouse.models.AuthRequest;
 import org.esteban.lescano.dmhouse.models.AuthResponse;
-import org.esteban.lescano.dmhouse.security.JwtTokenUtil;
 import org.esteban.lescano.dmhouse.services.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

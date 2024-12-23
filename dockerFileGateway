@@ -1,0 +1,21 @@
+# Etapa de construcción
+FROM maven:3.8.5-openjdk-21 AS build
+WORKDIR /gateway
+# Copiar el archivo de configuración Maven y resolver dependencias
+COPY gateway/pom.xml .
+RUN mvn dependency:resolve
+# Copiar el código fuente al contenedor
+COPY gateway/src ./src
+# Compilar el proyecto y empaquetar en un archivo JAR
+RUN mvn clean package -DskipTests
+
+# Etapa de ejecución
+FROM openjdk:21-jdk-slim
+WORKDIR /gateway
+# Copiar el archivo JAR generado desde la etapa de construcción
+COPY --from=build /gateway/target/*.jar gateway.jar
+# Exponer el puerto en el contenedor
+EXPOSE 8080
+# Comando para iniciar la aplicación
+ENTRYPOINT ["java", "-jar", "gateway.jar"]
+
