@@ -23,28 +23,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/DMHouse")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final UserDetailsService userDetailsService;
     private final ClientService clientService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserDetailsService userDetailsService, ClientService clientService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userDetailsService = userDetailsService;
+    public AuthController(ClientService clientService) {
         this.clientService = clientService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-            authRequest.getFullname(),
-            authRequest.getPassword()
-        ));
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getFullname());
-        final String jwt = jwtTokenUtil.generateToken(userDetails);
+        try {
+            // Lógica para interactuar con Keycloak y obtener el token
+            String token = clientService.authenticateWithKeycloak(authRequest.getFullname(), authRequest.getPassword());
 
-        return ResponseEntity.ok(new AuthResponse(jwt));
+            return ResponseEntity.ok(new AuthResponse(token));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 
     @PostMapping("/register")

@@ -1,5 +1,6 @@
 package org.esteban.lescano.dmhouse.security;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -16,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -53,7 +55,7 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-@Bean
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Dominio del frontend
@@ -82,20 +84,10 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthConverter() {
-        return jwt -> {
-            Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
-            return new JwtAuthenticationToken(jwt, authorities);
-        };
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
 
-    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
-        Map<String, Object> claims = jwt.getClaims();
-        List<String> roles = (List<String>) claims.getOrDefault("roles", List.of());
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-                .collect(Collectors.toList());
-    }
 }
 
 //
@@ -106,7 +98,7 @@ public class WebSecurityConfig {
 //                .build();
 //    }
 
-       //Configurar los ClientId que necesite usa por ahora solo usamos el front propuesto pero se puede usar cualquier client
+//Configurar los ClientId que necesite usa por ahora solo usamos el front propuesto pero se puede usar cualquier client
 //   @Bean
 //    public RegisteredClientRepository registeredClientRepository() {
 //        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -122,7 +114,7 @@ public class WebSecurityConfig {
 //        return new InMemoryRegisteredClientRepository(registeredClient);
 //    }
 
-    //esta parte la usa el servidor para la verificacion de los token
+//esta parte la usa el servidor para la verificacion de los token
 //    @Bean
 //    public JWKSource<SecurityContext> jwkSource(){
 //        KeyPair keyPair = generateKeyPair();
