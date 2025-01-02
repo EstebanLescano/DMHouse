@@ -3,6 +3,7 @@ package org.esteban.lescano.dmhouse.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.esteban.lescano.dmhouse.entities.Wallet;
 import org.esteban.lescano.dmhouse.enums.TransactionConceptEnum;
 import org.esteban.lescano.dmhouse.services.WalletService;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/DMHouse")
+@Tag(name = "Wallet", description = "Manage wallet-related operations")
 public class WalletController {
 
     private final WalletService walletService;

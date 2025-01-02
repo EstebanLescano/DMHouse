@@ -34,24 +34,27 @@ public class WebSecurityConfig {
     private static final String[] SWAGGER_WHITELIST = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/DMHouse/swagger-ui/**",
+            "/DMHouse/v3/api-docs/**",
+            "/DMHouse/swagger-ui.html"
     };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_WHITELIST).permitAll() // Permitir acceso a Swagger
                         .requestMatchers("/DMHouse/login", "/DMHouse/register").permitAll() // Permitir acceso al login y registro
                         .requestMatchers("/users/**").authenticated())
-                .httpBasic(httpBasic -> httpBasic.init(http))
+//                .httpBasic(httpBasic -> httpBasic.init(http))
 
 
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.decoder(jwtDecoder())));
+                        .jwt(jwt -> jwt.decoder(jwtDecoder()))
+                        );
         return http.build();
     }
 
@@ -60,6 +63,8 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Dominio del frontend
         configuration.addAllowedOriginPattern("*"); // Permitir todos los orígenes
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

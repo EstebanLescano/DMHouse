@@ -1,5 +1,6 @@
 package org.esteban.lescano.dmhouse.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.esteban.lescano.dmhouse.Exceptions.ClientAlreadyExistsException;
 import org.esteban.lescano.dmhouse.entities.Client;
 import org.esteban.lescano.dmhouse.models.AuthRequest;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/DMHouse")
+@Tag(name = "Authentication")
 public class AuthController {
 
     private final ClientService clientService;

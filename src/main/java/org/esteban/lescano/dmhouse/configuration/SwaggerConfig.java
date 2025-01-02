@@ -17,6 +17,6 @@ public class SwaggerConfig {
                         .description("Documentación interactiva de la API de DMHouse")
                         .contact(new Contact()
                                 .name("Tu Nombre")
-                                .email("tuemail@ejemplo.com")));
+                                .email("estebanles22@gmail.com")));
     }
 }
