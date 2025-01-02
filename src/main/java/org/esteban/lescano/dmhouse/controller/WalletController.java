@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/DMHouse")
+@RequestMapping("DMHouse")
 @Tag(name = "Wallet", description = "Manage wallet-related operations")
 public class WalletController {
 
