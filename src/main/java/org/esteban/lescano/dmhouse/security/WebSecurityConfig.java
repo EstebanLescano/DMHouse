@@ -32,9 +32,6 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 public class WebSecurityConfig {
     private static final String[] SWAGGER_WHITELIST = {
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/swagger-ui.html",
             "/DMHouse/swagger-ui/**",
             "/DMHouse/v3/api-docs/**",
             "/DMHouse/swagger-ui.html"
@@ -47,14 +44,10 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_WHITELIST).permitAll() // Permitir acceso a Swagger
-                        .requestMatchers("/DMHouse/login", "/DMHouse/register").permitAll() // Permitir acceso al login y registro
-                        .requestMatchers("/users/**").authenticated())
-//                .httpBasic(httpBasic -> httpBasic.init(http))
-
-
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.decoder(jwtDecoder()))
-                        );
+                );
         return http.build();
     }
 
@@ -77,22 +70,10 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+        return NimbusJwtDecoder
                 .withJwkSetUri("http://localhost:8080/realms/dmh/protocol/openid-connect/certs")
                 .build();
-
-        // Configuración para validar claims adicionales
-        OAuth2TokenValidator<Jwt> validator = new JwtTimestampValidator();
-        jwtDecoder.setJwtValidator(validator);
-
-        return jwtDecoder;
     }
-
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
-
 }
 
 //
