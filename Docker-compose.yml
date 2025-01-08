@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   app:
     build:
@@ -30,12 +31,32 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - DB_VENDOR=postgres
+      - DB_ADDR=postgres:5432
+      - DB_DATABASE=keycloak
+      - DB_USER=keycloak_user
+      - DB_PASSWORD=keycloak_password
     ports:
       - "8082:8080"
     volumes:
       - ./keycloak/realm-config:/opt/keycloak/data/import
+    depends_on:
+      - postgres
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak_user
+      - POSTGRES_PASSWORD=keycloak_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
