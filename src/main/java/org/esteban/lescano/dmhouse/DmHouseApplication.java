@@ -13,6 +13,7 @@ public class DmHouseApplication {
     }
 
 //config para titulo de documentacion
+@Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new io.swagger.v3.oas.models.info.Info()
