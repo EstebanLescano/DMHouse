@@ -1,4 +1,4 @@
-package org.esteban.lescano.dmhouse.entities;
+package org.esteban.userservice.entity;
 
 import jakarta.persistence.*;
 

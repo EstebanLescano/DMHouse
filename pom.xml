@@ -11,6 +11,7 @@
     <groupId>org.esteban.lescano</groupId>
     <artifactId>DMHouse</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>DMHouse</name>
     <description>DMHouse</description>
     <url/>
@@ -29,6 +30,11 @@
     <properties>
         <java.version>21</java.version>
     </properties>
+
+    <modules>
+        <module>user-service</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -96,15 +102,15 @@
 
         <!--Security -->
         <!-- OAuth2 Resource Server para validación de tokens -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-    </dependency>
-    <!-- Cliente OAuth2 (opcional para solicitudes salientes a Keycloak) -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-oauth2-client</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <!-- Cliente OAuth2 (opcional para solicitudes salientes a Keycloak) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>

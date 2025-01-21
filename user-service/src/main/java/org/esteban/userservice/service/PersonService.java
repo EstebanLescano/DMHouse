@@ -1,8 +1,8 @@
-package org.esteban.lescano.dmhouse.services;
+package org.esteban.userservice.service;
 
-import org.esteban.lescano.dmhouse.models.ClientDTO;
-import org.esteban.lescano.dmhouse.repository.PersonRepository;
-import org.esteban.lescano.dmhouse.entities.Person;
+import org.esteban.userservice.entity.Person;
+import org.esteban.userservice.models.ClientDTO;
+import org.esteban.userservice.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 @Service

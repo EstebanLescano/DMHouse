@@ -1,11 +1,12 @@
-package org.esteban.lescano.dmhouse.services;
+package org.esteban.userservice.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.esteban.lescano.dmhouse.Exceptions.ClientAlreadyExistsException;
-import org.esteban.lescano.dmhouse.entities.Client;
-import org.esteban.lescano.dmhouse.entities.Person;
-import org.esteban.lescano.dmhouse.repository.ClientRepository;
-import org.esteban.lescano.dmhouse.repository.PersonRepository;
+import org.esteban.userservice.entity.Client;
+import org.esteban.userservice.entity.Person;
+import org.esteban.userservice.exceptions.ClientAlreadyExistsException;
+import org.esteban.userservice.models.ClientDTO;
+import org.esteban.userservice.repository.ClientRepository;
+import org.esteban.userservice.repository.PersonRepository;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -81,5 +84,42 @@ public class ClientService {
         }
         client.setPerson(existingPerson.get());
         clientRepository.save(client);
+    }
+
+    public ClientDTO registerUser(ClientDTO request) {
+        return new ClientDTO(
+                UUID.randomUUID().toString(),
+                request.getName(),
+                request.getLastName(),
+                request.getEmail(),
+                request.getDNI(),
+                request.getPhone(),
+                generateCvu(),
+                generateAlias()
+        );
+    }
+
+    private String generateCvu() {
+        Random random = new Random();
+        StringBuilder cvu = new StringBuilder();
+        for (int i = 0; i < 22; i++) {
+            cvu.append(random.nextInt(10));
+        }
+        return cvu.toString();
+    }
+
+    private String generateAlias() {
+        Random random = new Random();
+        String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder alias = new StringBuilder();
+
+        for (int i = 0; i < 3; i++) {
+            alias.append(letters.charAt(random.nextInt(letters.length())));
+        }
+        for (int i = 0; i < 3; i++) {
+            alias.append(random.nextInt(10));
+        }
+
+        return alias.toString();
     }
 }

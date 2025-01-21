@@ -1,7 +1,8 @@
-package org.esteban.lescano.dmhouse.mappers;
+package org.esteban.userservice.mappers;
 
-import org.esteban.lescano.dmhouse.entities.Person;
-import org.esteban.lescano.dmhouse.models.PersonDTO;
+
+import org.esteban.userservice.entity.Person;
+import org.esteban.userservice.models.PersonDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

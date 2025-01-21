@@ -1,4 +1,4 @@
-package org.esteban.lescano.dmhouse.models;
+package org.esteban.userservice.models;
 
 import java.util.Date;
 
@@ -8,9 +8,19 @@ public class ClientDTO {
     private String lastName;
     private String DNI;
     private String email;
+    private Integer phone;
     private Date dateLogin;
 
     public ClientDTO() {
+    }
+
+    public ClientDTO(String string, String name, String lastName, String email, String dni, Integer phone, String cvu, String alias) {
+        this.name = name;
+        this.lastName = lastName;
+        this.DNI = dni;
+        this.email = email;
+        this.phone = phone;
+        this.dateLogin = new Date();
     }
 
     public String getName() {
@@ -43,6 +53,13 @@ public class ClientDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getPhone() {
+        return phone;
+    }
+    public void setPhone(Integer phone) {
+        this.phone = phone;
     }
 
     public Date getDateLogin() {

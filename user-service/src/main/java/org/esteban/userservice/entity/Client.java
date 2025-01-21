@@ -1,9 +1,8 @@
-package org.esteban.lescano.dmhouse.entities;
+package org.esteban.userservice.entity;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "client")
@@ -69,5 +68,6 @@ public class Client {
     public void setPerson(Person person) {
         this.person = person;
     }
+
 }
 

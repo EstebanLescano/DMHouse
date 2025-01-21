@@ -1,6 +1,6 @@
-package org.esteban.lescano.dmhouse.repository;
+package org.esteban.userservice.repository;
 
-import org.esteban.lescano.dmhouse.entities.Client;
+import org.esteban.userservice.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

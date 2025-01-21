@@ -1,4 +1,4 @@
-package org.esteban.lescano.dmhouse.models;
+package org.esteban.userservice.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
