@@ -1,0 +1,26 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: ["start-dev"]
+    ports:
+      - "8680:8080"  # mapea el puerto 8080 del contenedor al 8680 de tu máquina
+    environment:
+      - KC.DB=postgres
+      - KC.DB_URL=jdbc:postgresql://postgres:5432/dmh
+      - KC.DB-USERNAME=esteban
+      - KC.DB-PASSWORD=123456Aa.
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin123
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=dmh
+      - POSTGRES_USER=esteban
+      - POSTGRES_PASSWORD=123456Aa.
+    ports:
+      - "5432:5432"  # puerto para la base de datos
