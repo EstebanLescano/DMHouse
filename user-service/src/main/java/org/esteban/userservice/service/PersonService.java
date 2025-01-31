@@ -5,6 +5,8 @@ import org.esteban.userservice.models.ClientDTO;
 import org.esteban.userservice.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class PersonService {
 PersonRepository personRepository;
@@ -29,5 +31,9 @@ PersonRepository personRepository;
         Person person = createPerson(dto);
         savePerson(person);
         return true;
+    }
+
+    public Optional<Person> getPersonById(Integer id) {
+    return personRepository.findByClientId(id);
     }
 }
