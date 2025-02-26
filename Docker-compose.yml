@@ -1,62 +1,35 @@
-version: '3.8'
-
 services:
-  app:
-    build:
-      context: ./DMHouse
-      dockerfile: Dockerfile
-    ports:
-      - "3500:3500"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - KEYCLOAK_URL=http://keycloak:8080
-    depends_on:
-      - keycloak
-
-  gateway:
-    build:
-      context: ./gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - KEYCLOAK_URL=http://keycloak:8080
-    depends_on:
-      - keycloak
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:22.0
-    command: start-dev
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - DB_VENDOR=postgres
-      - DB_ADDR=postgres:5432
-      - DB_DATABASE=keycloak
-      - DB_USER=keycloak_user
-      - DB_PASSWORD=keycloak_password
-    ports:
-      - "8082:8080"
-    volumes:
-      - ./keycloak/realm-config:/opt/keycloak/data/import
-    depends_on:
-      - postgres
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   postgres:
-    image: postgres:latest
+    image: postgres:15
+    container_name: postgres
     environment:
-      - POSTGRES_DB=keycloak
-      - POSTGRES_USER=keycloak_user
-      - POSTGRES_PASSWORD=keycloak_password
+      POSTGRES_USER: esteban
+      POSTGRES_PASSWORD: 123456Aa.
+      POSTGRES_DB: dmh
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: always
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    depends_on:
+      - postgres
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/dmh
+      KC_DB_USERNAME: esteban
+      KC_DB_PASSWORD: 123456Aa.
+      KC_DB_URL_PROPERTIES: ssl=false
+    ports:
+      - "8080:8080"
+    command: start-dev
+    volumes:
+      - keycloak_data:/opt/keycloak/data
 
 volumes:
   postgres_data:
+  keycloak_data:
